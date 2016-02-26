@@ -1,0 +1,8 @@
+#all{
+	width:1000 px;
+	margin: 0 auto;
+}
+#top #bot #logindiv #menu{
+	width:100%;
+	float:left;
+}
