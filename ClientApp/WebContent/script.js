@@ -51,6 +51,12 @@ $(document).ready(
 											+ result['points']);
 					});
 			});
-			
+			//промяна на паролата - ?? куки с повече параметри
+			$("#chpassbtn").on('click',function(){
+				var newpass = $("#chpass").val();
+				$.get("http://localhost:8080/WebGame/db/chpass?password="+newpass+"&id=1", function(resultchpass){
+					alert(resultchpass);
+				});
+			});
 
 });
