@@ -3,34 +3,99 @@
 		<meta charset="UTF-8"> 
 		<title>Курсова задача</title>
 		<link rel="stylesheet" type="text/css" href="css.css">
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<link rel="stylesheet" href="bootstrap.min.css">
+  		<script src="jquery-1.12.1.min.js"></script>
+ 		<script src="bootstrap.min.js"></script>
 		<script src="script.js"></script> 
 		<script src="jquery.cookie.js"></script>
 </HEAD>
 
 
 <BODY>
-<div id="all">
-	<div id="top">
-		<div id="menu">
-			<select id="teamnum">
-				<option value="1">1</option>
-				<option value="2">2</option>
-				<option value="3">3</option>
-				<option value="4">4</option>
-			</select>
-			<button id="testbtn">Test button</button><button id="logoutbtn">Logout</button>
-			<br>
-			<p>Промяна на парола:</p>
-			<input type = "password" id="chpass"><button id="chpassbtn">Change pass</button>
-		</div>
-		<div id="logindiv">
-			<input type="text" id="username"><input type="password" id="password"><button id="loginbtn">Login</button>
+<div class="container" id="all">
+	<div class="row">
+		<div class="col-md-2"></div>
+		<div class="col-md-8" id="top-logo"></div>
+		<div class="col-md-2" id="login-div">
+			
+
+			<elm id="login-elm">
+					<div class="form-group">
+						<input type="text" class="form-control" id="username" placeholder="Username" aria-describedby="sizing-addon3">
+					</div>
+					<div class="form-group form-group-sm">
+						<input type="password" class="form-control" id="password" placeholder="Password" aria-describedby="sizing-addon3">
+					</div>
+					<button class="btn btn-success btn-sm" id="loginbtn">Login</button>
+			</elm>
+			
+
+			<elm id="logout-elm" visibility="hidden">
+					<span class="label label-info" id="login-name">
+						<script type="text/javascript">$("#login-name").text($.cookie("name"));</script>
+					</span>
+					<button class="btn btn-success btn-xs" id="logoutbtn">Logout</button>
+			</elm>
+		
+
 		</div>
 	</div>
-	<div id="bot">
-		<p id="txtarea"></p>
-		
+
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-1" id="main-tl"></div>
+		<div class="col-md-8" id="main-tc"></div>
+		<div class="col-md-1" id="main-tr"></div>
+		<div class="col-md-1"></div>
+	</div>
+	
+	
+	
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-10" id="main-game">
+			<elm id="elm-main-login">
+				<div class="container">
+					<div class="row">
+						<div class="col-md-12"></div>
+					</div>
+
+
+					<div class="row">
+						<div class="col-md-2">
+							<div class="btn-group-vertical" role="group">
+								<p><button class="btn btn-success">меню1</button></p>
+								<p><button class="btn btn-success">меню2</button></p>
+								<p><button class="btn btn-success">меню3</button></p>
+								<p><button class="btn btn-success" id="test-btn">Тест бутон</button></p>
+							</div>
+						</div>
+						<div class="col-md-10">
+						<!--съдържание-->
+							<div class="container">
+								<div class="row">
+									<div class="col-md-12" id="main-content">съдържание .....</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+
+				</div>
+			</elm>
+		</div>
+		<div class="col-md-1"></div>
+	</div>
+	
+	
+	
+	
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-1" id="main-dl"></div>
+		<div class="col-md-8" id="main-dc"></div>
+		<div class="col-md-1" id="main-dr"></div>
+		<div class="col-md-1"></div>
 	</div>
 
 </div>

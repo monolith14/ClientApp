@@ -1,8 +1,46 @@
-#all{
-	width:1000 px;
-	margin: 0 auto;
+body{
+	background: url("img/grass06.jpg");
 }
-#top #bot #logindiv #menu{
-	width:100%;
-	float:left;
+#tbl-login{
+	background-color: white;
+}
+#main-tl{
+	background-image: url("img/b_tl.png");
+	min-height: 50px;
+
+}
+#main-tc{
+	background-color: #003333;
+	min-height: 50px; 
+}
+#main-tr{
+	background-image: url("img/b_tr.png");
+	background-position: right;
+	min-height: 50px;
+}
+#main-dl{
+	background-image: url("img/b_dl.png");
+	min-height: 50px; 
+}
+#main-dc{
+	background-color: #003333;
+	min-height: 50px; 
+}
+#main-dr{
+	background-image: url("img/b_dr.png");
+	background-position: right;
+	min-height: 50px; 
+}
+#main-game{
+	background: url("img/fbf.gif") #003333;
+	background-position: center;
+	background-repeat: no-repeat;
+	min-height: 500px; 
+	color: #FFF;
+}
+#top-logo{
+	background-image: url("img/cuplogo.gif");
+	background-repeat: no-repeat;
+	background-position: center;
+	min-height: 140px;
 }

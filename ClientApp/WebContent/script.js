@@ -1,29 +1,29 @@
 $(document).ready(
 		function() {
-			//проверка за съществуващо куки, ако има показва div "menu" и "bot"
-			//ако няма показва div "logindiv" за вход
-			if(!$.cookie("webgame")){
-				$("#logindiv").show();
-				$("#menu,#bot").hide();
+			if($.cookie("id")){
+					$("#login-elm").hide();
+					$("#logout-elm").show();
+					$("#elm-main-login").show();
 			}
 			else{
-				$("#logindiv").hide();
-				$("#menu").show();
+				$("#login-elm").show();
+				$("#logout-elm").hide();
+				$("#elm-main-login").hide();
 			}
-			//заявка към уеб сървиса с подадени параметри от поле за потребител и парола
-			//връща JSON  от обект User
+			
 			$("#loginbtn").on('click',function(){
 				var username = $("#username").val();
 				var password = $("#password").val();
-				
 				$.get("http://localhost:8080/WebGame/db/login?username="+username+"&password="+password, function(resultlogin){
 					if(resultlogin['id']!="0"){
-						$.cookie("webgame",resultlogin['token']);
-						$("#logindiv").hide();
-						$("#menu,#bot").show();
-						$("#txtarea").text("");
+						$.cookie("id",resultlogin['id']);
+						$.cookie("username",resultlogin['username']);
+						$.cookie("team",resultlogin['team']);
+						$.cookie("token",resultlogin['token']);
+						$.cookie("name",resultlogin['name']);
 						alert("Welcome "+resultlogin['name']+"!");
-						
+						window.location.reload(true);
+
 					}
 					else{
 						alert("Invalid username/password");
@@ -31,32 +31,22 @@ $(document).ready(
 				});
 			});
 			//изход и изтрива кукито
-			$("#logoutbtn").on('click',function(){
-				$.removeCookie("webgame");
-				$("#logindiv").show();
-				$("#menu,#bot").hide();
-				$("#txtarea").text("");
+			$("#logoutbtn").click(function(){
+				$.removeCookie("id");
+				$.removeCookie("username");
+				$.removeCookie("team");
+				$.removeCookie("token");
+				$.removeCookie("name");
+				alert("Logout ok!");
+				window.location.reload(true);
 			});
 			//тест заявка към уеб сървиса за статистика на отделен отбор
 			// връща JSON  от обект Team
-			$("#testbtn").on('click',function() {
-					var teamnum = $("#teamnum").val();
-					$("#txtarea").text("");
-					$.get("http://localhost:8080/WebGame/db/teamstats?id="+ teamnum, function(result) {
-						$("#txtarea").text(result['name'] + ": Срещи("
-											+ result['played'] + "),победи("
-											+ result['wons'] + "),равни("
-											+ result['draws'] + "),загуби("
-											+ result['loss'] + "); Точки: "
-											+ result['points']);
-					});
-			});
-			//промяна на паролата - ?? куки с повече параметри
-			$("#chpassbtn").on('click',function(){
-				var newpass = $("#chpass").val();
-				$.get("http://localhost:8080/WebGame/db/chpass?password="+newpass+"&id=1", function(resultchpass){
-					alert(resultchpass);
+			$("#test-btn").click(function(){
+				$.get("http://localhost:8080/WebGame/db/getteams", function(resulttest){
+					$("#main-content").text(resulttest);
 				});
 			});
+
 
 });
