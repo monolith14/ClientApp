@@ -91,3 +91,18 @@ body{
 #changepass-div{
 	color: black;
 }
+#teamtbl td{
+	padding: 5px;
+	text-align: center;
+}
+ul {
+	padding-top: 100px;
+	text-align: justify;
+   list-style-position: inside;
+   width: 600px;
+   float: left;
+}
+span{
+	padding-left: 3px;
+	padding-right: 3px;
+}
