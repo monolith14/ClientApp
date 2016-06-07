@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>jQuery UI Droppable - Default functionality</title>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+  <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+  <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+  <link rel="stylesheet" href="/resources/demos/style.css">
+  <style>
+#field{
+  background-image: url("img/shema.gif");
+  background-repeat: no-repeat;
+  min-height: 380px;
+  min-width: 600px;
+  margin: 0 auto;
+
+}
+.player{
+  height: 37px;
+  width: 37px;
+  background-image: url("img/numbers.gif");
+  }
+.one{
+  background-position:0px 0px;
+}
+.two{
+  background-position:-37px 0px;
+}
+#p1{
+  position: fixed;
+  margin-top: 10px;
+  margin-left: 74px;
+}
+#p2{
+  position: fixed;
+  margin-top: 10px;
+  margin-left: 444px;
+}
+#all{
+  margin-top: 23px;
+}
+
+
+  </style>
+</head>
+<body>
+ <div id="all">
+<div id="field">
+<div class="player one" id="p1"></div><div class="player two" id="p2"></div>
+</div>
+ 
+ </div>
+</body>
+</html>

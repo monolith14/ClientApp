@@ -1,11 +1,12 @@
 $(document).ready(function(){
+			var myHost = "http://localhost:8080/";
 			//ако има куки скрива формата за вход и показва името на потребителя заедно с бутон за изход
 			//ако няма куки показва форма за вход или регистрация
 			if($.cookie("id")){
 					$("#login-elm").hide();
 					$("#logout-elm").show();
 					$("#elm-main-login").show();
-					//зареждане на имен на потребител и отбор в горната лента от куки
+					//зареждане на име на потребител и отбор в горната лента от куки
 					var welcomeUser = $.cookie("name");
 					var welcomeTeam = "-";
 					if($.cookie("team")!=0){
@@ -20,8 +21,8 @@ $(document).ready(function(){
 			}
 			//проверка за куки с отбор, ако не е избран се извежда съобщение и списък със свободните отбори
 			if($.cookie("team")=="0"){
-				alert("Нямате отбор! Моля, изберете от списъка!");
-				$.get("http://localhost:8080/WebGame/db/getteams",function(resultwelcome){
+				alert("Нямате избран клуб! Моля, изберете от списъка!");
+				$.get(myHost+"WebGame/db/getteams",function(resultwelcome){
 					var tempTeams;
 					var arrayTeams = new Array();
 					tempTeams = resultwelcome.replace('[','').replace(']','');
@@ -47,7 +48,7 @@ $(document).ready(function(){
 				//alert($(this).prop("value"));
 				//http://localhost:8080/WebGame/db/pickteam?uid=1&teamid=3&token=000000000000&teamname=Barcelona
 				var tempArrayPickteam = $(this).prop("value").split('|');
-				$.get("http://localhost:8080/WebGame/db/pickteam?uid="+$.cookie("id")+"&teamid="+tempArrayPickteam[0]+"&token="+$.cookie("token")+"&teamname="+tempArrayPickteam[1],function(resultPickTeam){
+				$.get(myHost+"WebGame/db/pickteam?uid="+$.cookie("id")+"&teamid="+tempArrayPickteam[0]+"&token="+$.cookie("token")+"&teamname="+tempArrayPickteam[1],function(resultPickTeam){
 					alert(resultPickTeam);
 					$.cookie("team",tempArrayPickteam[1]);
 					window.location.reload(true);
@@ -57,11 +58,12 @@ $(document).ready(function(){
 			$("#loginbtn").on('click',function(){
 				var username = $("#username").val();
 				var password = $("#password").val();
-				$.get("http://localhost:8080/WebGame/db/login?username="+username+"&password="+password, function(resultlogin){
+				$.get(myHost+"WebGame/db/login?username="+username+"&password="+password, function(resultlogin){
 					if(resultlogin['id']!="0"){
 						$.cookie("id",resultlogin['id']);
 						$.cookie("username",resultlogin['username']);
 						$.cookie("team",resultlogin['team']);
+						$.cookie("teamId",resultlogin['teamId']);
 						$.cookie("token",resultlogin['token']);
 						$.cookie("name",resultlogin['name']);
 						alert("Здравей "+resultlogin['name']+"!");
@@ -77,6 +79,7 @@ $(document).ready(function(){
 				$.removeCookie("id");
 				$.removeCookie("username");
 				$.removeCookie("team");
+				$.removeCookie("teamId");
 				$.removeCookie("token");
 				$.removeCookie("name");
 				alert("Успешен изход от системата!");
@@ -96,7 +99,7 @@ $(document).ready(function(){
 				var regPassword1 = $("#register-password1").val();
 				var regPassword2 = $("#register-password2").val();
 				if(regName!=""&&regMail!=""&&regUsername!=""&&regPassword1!=""&&regPassword1==regPassword2){
-					$.get("http://localhost:8080/WebGame/db/register?username="+regUsername+"&password="+regPassword1+"&name="+regName+"&mail="+regMail,function(resultregister){
+					$.get(myHost+"WebGame/db/register?username="+regUsername+"&password="+regPassword1+"&name="+regName+"&mail="+regMail,function(resultregister){
 						alert(resultregister);
 						$("#disable-div").css("display","none");
 						$("#register-div").css("display","none");
@@ -117,7 +120,8 @@ $(document).ready(function(){
 			});
 			//бутон класиране
 			$("#standingbtn").click(function(){
-				$.get("http://localhost:8080/WebGame/db/getStandingTable",function(resultStandingTable){
+				$("#sub-menu").html("");
+				$.get(myHost+"WebGame/db/getStandingTable",function(resultStandingTable){
 					var tempStandingTable = resultStandingTable.replace('[','').replace(']','');
 					var arrayStandingTable = new Array();
 					var arrayStandingTableParted;
@@ -135,38 +139,111 @@ $(document).ready(function(){
 					$("#main-content").html(returnStandingTable);
 				});
 			});
-			//бутон "Отбор" извеждат се показателите на отбора с кратки обяснения
+			//бутон "Отбор" извежда таблица с играчите на отбора по позиции
 			$("#teambtn").click(function(){
-				$.get("http://localhost:8080/WebGame/db/getpt?team="+$.cookie("team"),function(resultTeam){
-					var tempArrayTeam = resultTeam.replace('[','').replace(']','');
-					var arrayTeam = new Array();
-					arrayTeam = tempArrayTeam.split("|");
-					var teamAttack = arrayTeam[0];
-					var teamDefence = arrayTeam[1];
-					var teamSpeed = arrayTeam[2];
-					var teamTech = arrayTeam[3];
-					var teamExtra = arrayTeam[4];
-					var teamTotal = teamAttack+teamDefence+teamSpeed+teamTech+teamExtra;
-					var tmpAtt = teamAttack;
-					var tmpDef = teamDefence;
-					var tmpSpd=teamSpeed;
-					var tmpTec=teamTech;
-					var tmpExt = teamExtra;
+				$("#main-content").html("Текст за ?????");
+				var teamMenuButtons = "<button class='btn btn-info btn-xs' id='teambtntable'>Състав</button>&nbsp;<button id='teambtntactic' class='btn btn-info btn-xs'>Схема на игра</button>";
+				$("#sub-menu").html(teamMenuButtons);
+			});		
+				$("body").on('click','#teambtntactic',function(){
+					var teamTacticTable = "<div id='spacer-120px'></div><div id='team-tactic'>";
+					var teamTacticTableDiv;
+					$.getJSON(myHost+"WebGame/db/groupteam?teamid="+$.cookie("teamId"), function(resultTeamPlayers1){
+						teamTacticTableDiv = genRowSelectPlayes(resultTeamPlayers1);
+						//1 - 3  red za napadateli centralni i zashtitnici
+						for(taci=0;taci<3;taci++){
+						teamTacticTable+="<div id='team-tactic-r'>";
+							for(tac_i = 0;tac_i<5;tac_i++){teamTacticTable+=teamTacticTableDiv;}
+						teamTacticTable+="</div>";
+						teamTacticTable+="<div id='spacer-120px'></div>";
+						}
+						//posledniq div za vratar
+						teamTacticTable+="<div id='team-tactic-r'><div id='team-tactic-r1-d1'></div><div id='team-tactic-r1-d1'></div>";
+						teamTacticTable+=teamTacticTableDiv;
+						teamTacticTable+="</div>";
 
-					var returnTeam = '<table id="teamtbl" class="table-bordered"><tr><td colspan="5"><h4>'+$.cookie('team')+'</h4></td></tr><tr><td>Атака:</td><td>Защита:</td><td>Скорост:</td><td>Техника:</td><td>За разпределяне:</td></tr><tr><td><button id ="team-att-plus" class="btn btn-danger btn-xs"> + </button><span id="teamAttPoint">'+arrayTeam[0]+'</span><button id ="team-att-minus" class="btn btn-primary btn-xs">&nbsp;-</button></td><td><button id ="team-att-plus" class="btn btn-danger btn-xs"> + </button><span id="teamAttPoint">'+arrayTeam[1]+'</span><button id ="team-att-minus" class="btn btn-primary btn-xs">&nbsp;-</button></td><td><button id ="team-att-plus" class="btn btn-danger btn-xs"> + </button><span id="teamAttPoint">'+arrayTeam[2]+'</span><button id ="team-att-minus" class="btn btn-primary btn-xs">&nbsp;-</button></td><td><button id ="team-att-plus" class="btn btn-danger btn-xs"> + </button><span id="teamAttPoint">'+arrayTeam[3]+'</span><button id ="team-att-minus" class="btn btn-primary btn-xs">&nbsp;-</button></td><td>'+arrayTeam[4]+'</td></tr></table>';
-
-					$('body').on('click',"#team-att-plus",function(){
-						$("#team-att-plus").prop("disabled","true");
-						$("#teamAttPoint").text(parseInt(tmpAtt)+1);
-						//да се допишат 2 метода единия да проверява има ли доп. точки за разпределяне, ако няма да деактивира бутоните
-						//другия да проверява текуща стойност и да сравнява с първоначалната, ако са равни да деактивира бутона минус ?????????????????
+					$("#main-content").html(teamTacticTable);
 					});
+					
 
-
-					returnTeam +="<ul><li><b>Атака</b> - показател на отбора пред противниковата врата. По-висока стойност означава по-голям процент на реализираните положения.</li><li><b>Защита</b> - показател на отбора за защита. По-висока стойност означава по-малък шанс за допускане на гол.</li><li><b>Скорост</b> - показател за придвижването на отбора по терена. По-висока стойност означава по-бързо прегрупиране от атака към защита и обратно, което води до създаване на по-голям брой положения.</li><li><b>Техника</b> - показател за техническите умения на отбора. По-висока стойност означава по-добър контрол на играта, съответно повече владение и повече положения за реализация.</li></ul>";
-					$("#main-content").html(returnTeam);
 				});
-			});
+				$("body").on('click','#teambtntable',function(){
+					$.getJSON(myHost+"WebGame/db/groupteam?teamid="+$.cookie("teamId"), function(resultTeamPlayers){
+					var teamPlayersTable ="<table id='teamtbl' class='table-bordered'><tr><td>No:</td><td>Позиция:</td><td>Име:</td><td>Години:</td><td>Атака:</td><td>Защита:</td><td>Скорост:</td><td>Техника:</td><td>Кондиция:</td></tr>";
+					teamPlayersTable+=createTbRowPLayers(resultTeamPlayers.gk);
+					if(resultTeamPlayers.df1){
+						teamPlayersTable+=createTbRowPLayers(resultTeamPlayers.df1);
+					}
+					if(resultTeamPlayers.df2){
+						teamPlayersTable+=createTbRowPLayers(resultTeamPlayers.df2);
+					}
+					if(resultTeamPlayers.df3){
+						teamPlayersTable+=createTbRowPLayers(resultTeamPlayers.df3);
+					}
+					if(resultTeamPlayers.df4){
+						teamPlayersTable+=createTbRowPLayers(resultTeamPlayers.df4);
+					}
+					if(resultTeamPlayers.df5){
+						teamPlayersTable+=createTbRowPLayers(resultTeamPlayers.df5);
+					}
+					if(resultTeamPlayers.md1){
+						teamPlayersTable+=createTbRowPLayers(resultTeamPlayers.md1);
+					}
+					if(resultTeamPlayers.md2){
+						teamPlayersTable+=createTbRowPLayers(resultTeamPlayers.md2);
+					}
+					if(resultTeamPlayers.md3){
+						teamPlayersTable+=createTbRowPLayers(resultTeamPlayers.md3);
+					}
+					if(resultTeamPlayers.md4){
+						teamPlayersTable+=createTbRowPLayers(resultTeamPlayers.md4);
+					}
+					if(resultTeamPlayers.md5){
+						teamPlayersTable+=createTbRowPLayers(resultTeamPlayers.md5);
+					}
+					if(resultTeamPlayers.fw1){
+						teamPlayersTable+=createTbRowPLayers(resultTeamPlayers.fw1);
+					}
+					if(resultTeamPlayers.fw2){
+						teamPlayersTable+=createTbRowPLayers(resultTeamPlayers.fw2);
+					}
+					if(resultTeamPlayers.fw3){
+						teamPlayersTable+=createTbRowPLayers(resultTeamPlayers.fw3);
+					}
+					if(resultTeamPlayers.fw4){
+						teamPlayersTable+=createTbRowPLayers(resultTeamPlayers.fw4);
+					}
+					if(resultTeamPlayers.fw5){
+						teamPlayersTable+=createTbRowPLayers(resultTeamPlayers.fw5);
+					}
+					if(resultTeamPlayers.r1){
+						teamPlayersTable+=createTbRowPLayers(resultTeamPlayers.r1);
+					}
+					if(resultTeamPlayers.r2){
+						teamPlayersTable+=createTbRowPLayers(resultTeamPlayers.r2);
+					}
+					if(resultTeamPlayers.r3){
+						teamPlayersTable+=createTbRowPLayers(resultTeamPlayers.r3);
+					}
+					if(resultTeamPlayers.r4){
+						teamPlayersTable+=createTbRowPLayers(resultTeamPlayers.r4);
+					}
+					if(resultTeamPlayers.r5){
+						teamPlayersTable+=createTbRowPLayers(resultTeamPlayers.r5);
+					}
+					if(resultTeamPlayers.r6){
+						teamPlayersTable+=createTbRowPLayers(resultTeamPlayers.r6);
+					}
+					if(resultTeamPlayers.r7){
+						teamPlayersTable+=createTbRowPLayers(resultTeamPlayers.r7);
+					}
+					teamPlayersTable+="</table>";
+
+					$("#main-content").html(teamPlayersTable);				
+				});
+				});
+				
+			
 			
 			
 			//бутон "Настройки" смяна на парола
@@ -180,7 +257,7 @@ $(document).ready(function(){
 				var chpasswordnew1 = $("#chpass-new1").val();
 				var chpasswordnew2 = $("#chpass-new2").val();
 				if(chpasswordnew1==chpasswordnew2 && chpasswordnew1!=""){
-					$.get("http://localhost:8080/WebGame/db/chpass?passwordOld="+chpasswordold+"&passwordNew="+chpasswordnew1+"&id="+$.cookie('id'),function(resultChpass2){
+					$.get(myHost+"WebGame/db/chpass?passwordOld="+chpasswordold+"&passwordNew="+chpasswordnew1+"&id="+$.cookie('id'),function(resultChpass2){
 						alert(resultChpass2);
 						window.location.reload(true);
 					});
@@ -192,10 +269,78 @@ $(document).ready(function(){
 			//тест заявка към уеб сървиса за статистика на отделен отбор
 			// връща JSON  от обект Team
 			$("#test-btn").click(function(){
-				$.get("http://localhost:8080/WebGame/db/getteams", function(resulttest){
+				$.get(myHost+"WebGame/db/getteams", function(resulttest){
 					$("#main-content").text(resulttest);
 				});
 			});
+
+
+			//функции б.б.
+
+			function createTbRowPLayers(a){
+				if(a){
+					var aa,bb;
+					switch (a.position){
+						case 0:
+						aa="Резерва"; bb="style='color:grey;'";
+						break;
+						case 1:
+						aa="Вратар";bb="style='color:#2C833F;'";
+						break;
+						case 2:
+						case 3:
+						case 4:
+						case 5:
+						case 6:
+						aa="Защитник";bb="style='color:#3E9451;'";
+						break;
+						case 7:
+						case 8:
+						case 9:
+						case 10:
+						case 11:
+						aa="Полузащитник";bb="style='color:#6BB57B;'";
+						break;
+						case 12:
+						case 13:
+						case 14:
+						case 15:
+						case 16:
+						aa="Нападател";bb="style='color:#84C592;'";
+						break;
+					}
+					return "<tr "+bb+"><td>"+a.playNumber+"</td><td>"+aa+"</td><td>"+a.name+"</td><td>"+a.age+"</td><td>"+a.s1+"</td><td>"+a.s2+"</td><td>"+a.s3+"</td><td>"+a.s4+"</td><td>"+a.condition+"</td></tr>";
+				}
+			}
+
+			function genRowSelectPlayes(obj){
+				var resultGenRow = "<div id='team-tactic-r1-d1'><select class='form-control input-sm'><option> </option>";
+				if(obj.gk){resultGenRow+="<option>"+obj.gk.name+"</option>";}
+				if(obj.df1){resultGenRow+="<option>"+obj.df1.name+"</option>";}
+				if(obj.df2){resultGenRow+="<option>"+obj.df2.name+"</option>";}
+				if(obj.df3){resultGenRow+="<option>"+obj.df3.name+"</option>";}
+				if(obj.df4){resultGenRow+="<option>"+obj.df4.name+"</option>";}
+				if(obj.df5){resultGenRow+="<option>"+obj.df5.name+"</option>";}
+				if(obj.md1){resultGenRow+="<option>"+obj.md1.name+"</option>";}
+				if(obj.md2){resultGenRow+="<option>"+obj.md2.name+"</option>";}
+				if(obj.md3){resultGenRow+="<option>"+obj.md3.name+"</option>";}
+				if(obj.md4){resultGenRow+="<option>"+obj.md4.name+"</option>";}
+				if(obj.md5){resultGenRow+="<option>"+obj.md5.name+"</option>";}
+				if(obj.fw1){resultGenRow+="<option>"+obj.fw1.name+"</option>";}
+				if(obj.fw2){resultGenRow+="<option>"+obj.fw2.name+"</option>";}
+				if(obj.fw3){resultGenRow+="<option>"+obj.fw3.name+"</option>";}
+				if(obj.fw4){resultGenRow+="<option>"+obj.fw4.name+"</option>";}
+				if(obj.fw5){resultGenRow+="<option>"+obj.fw5.name+"</option>";}
+				if(obj.r1){resultGenRow+="<option>"+obj.r1.name+"</option>";}
+				if(obj.r2){resultGenRow+="<option>"+obj.r2.name+"</option>";}
+				if(obj.r3){resultGenRow+="<option>"+obj.r3.name+"</option>";}
+				if(obj.r4){resultGenRow+="<option>"+obj.r4.name+"</option>";}
+				if(obj.r5){resultGenRow+="<option>"+obj.r5.name+"</option>";}
+				if(obj.r6){resultGenRow+="<option>"+obj.r6.name+"</option>";}
+				if(obj.r7){resultGenRow+="<option>"+obj.r7.name+"</option>";}
+				resultGenRow+="</select></div>";
+				return resultGenRow;
+}
 
 
 

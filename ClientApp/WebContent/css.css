@@ -68,6 +68,9 @@ body{
 	z-index: 100;
 	color: black;
 }
+#elm-main-login{
+	width: 600px;
+}
 #reg-header{
 	color: white;
 }
@@ -94,6 +97,7 @@ body{
 #teamtbl td{
 	padding: 5px;
 	text-align: center;
+	color: #ced6df;
 }
 ul {
 	padding-top: 100px;
@@ -105,4 +109,24 @@ ul {
 span{
 	padding-left: 3px;
 	padding-right: 3px;
+}
+#sub-menu{
+	text-align: justify;
+	margin: 5px;
+	padding: 5px;
+	padding-left: 180px;
+}
+#team-tactic-r{
+	width: 780px;
+	float: left;
+}
+#team-tactic-r1-d1{
+	width: 130px;
+	float: left;
+	margin: 12px;
+}
+#spacer-120px{
+	width: 100%;
+	min-height: 120px;
+	float: left;
 }
