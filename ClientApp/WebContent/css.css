@@ -121,12 +121,12 @@ span{
 	float: left;
 }
 #team-tactic-r1-d1{
-	width: 130px;
+	width: 110px;
 	float: left;
 	margin: 12px;
 }
 #spacer-120px{
 	width: 100%;
-	min-height: 120px;
+	min-height: 100px;
 	float: left;
 }

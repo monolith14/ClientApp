@@ -3,6 +3,12 @@ $(document).ready(function(){
 			//ако има куки скрива формата за вход и показва името на потребителя заедно с бутон за изход
 			//ако няма куки показва форма за вход или регистрация
 			if($.cookie("id")){
+				if($.cookie("admin")==1){
+					$("#adminbtn").show();
+				}
+				else{
+					$("#adminbtn").hide();
+				}
 					$("#login-elm").hide();
 					$("#logout-elm").show();
 					$("#elm-main-login").show();
@@ -18,6 +24,7 @@ $(document).ready(function(){
 				$("#login-elm").show();
 				$("#logout-elm").hide();
 				$("#elm-main-login").hide();
+				$("#adminbtn").hide();
 			}
 			//проверка за куки с отбор, ако не е избран се извежда съобщение и списък със свободните отбори
 			if($.cookie("team")=="0"){
@@ -66,6 +73,7 @@ $(document).ready(function(){
 						$.cookie("teamId",resultlogin['teamId']);
 						$.cookie("token",resultlogin['token']);
 						$.cookie("name",resultlogin['name']);
+						$.cookie("admin",resultlogin['status']);
 						alert("Здравей "+resultlogin['name']+"!");
 						window.location.reload(true);
 					}
@@ -82,6 +90,7 @@ $(document).ready(function(){
 				$.removeCookie("teamId");
 				$.removeCookie("token");
 				$.removeCookie("name");
+				$.removeCookie("admin");
 				alert("Успешен изход от системата!");
 				window.location.reload(true);
 			});
@@ -120,7 +129,7 @@ $(document).ready(function(){
 			});
 			//бутон класиране
 			$("#standingbtn").click(function(){
-				$("#sub-menu").html("");
+				$("#sub-menu").html("&nbsp;");
 				$.get(myHost+"WebGame/db/getStandingTable",function(resultStandingTable){
 					var tempStandingTable = resultStandingTable.replace('[','').replace(']','');
 					var arrayStandingTable = new Array();
@@ -250,6 +259,8 @@ $(document).ready(function(){
 			$("#settingsbtn").click(function(){
 				var returnSettings = '<div id="changepass-div" class="input-group input-group-sm"><div class="row"><h4 id="reg-header">Смяна на парола:</h4></div><div class="row"><input id="chpass-old" type="password" placeholder="стара парола"></div><div class="row"><input id="chpass-new1" type="password" placeholder="нова парола"></div><div class="row"><input id="chpass-new2" type="password" placeholder="повтори паролата"></div><div class="row"><button class="btn btn-info btn-sm" id="frmchpassbtn">Промяна</button></div></div>';
 				$("#main-content").html(returnSettings);
+				var teamMenuButtons = "&nbsp;";
+				$("#sub-menu").html(teamMenuButtons);
 			});
 			//бутон потвърждаване за смяна на паролата
 			$("body").on('click', '#frmchpassbtn',function(resultChpass){
@@ -266,6 +277,52 @@ $(document).ready(function(){
 					alert("Несъвпадение на паролите!");
 				}
 			});
+
+			//бутон admin
+			$("#adminbtn").click(function(){
+				$("#main-content").html("кратко разяснение на админ ббутоните");
+				var teamMenuButtons = "<button class='btn btn-info btn-xs' id='createplayerbtn'>Генериране на играчи</button>&nbsp;<button id='distributeplayersbtn' class='btn btn-info btn-xs'>Разпределение по отбори</button>&nbsp;<button id='createroundsbtn' class='btn btn-info btn-xs'>Генериране на програма</button>&nbsp;<button id='playgamebtn' class='btn btn-info btn-xs'>Старт на кръга</button>";
+				$("#sub-menu").html(teamMenuButtons);
+			});
+
+			$("body").on('click','#createplayerbtn',function(){
+					var createplayerbtnhtml = "<div id='team-tactic'><h3>Въведете брой играчи за генериране</h3></br><input style='color:black;' size='3' type='text' id='inpcreateplayerqty'>&nbsp;&nbsp;<button class='btn btn-info btn-xs' id='createplayerbtnqty'>Генериране</button></div>";
+					$("#main-content").html(createplayerbtnhtml);
+				});
+
+			//суб бутон за генериране на играчи
+			$("body").on('click','#createplayerbtnqty',function(){
+					$.get(myHost+"WebGame/db/createplayer?qty="+$("#inpcreateplayerqty").val(), function(resultCreatePlayers){
+						$("#main-content").html(resultCreatePlayers);
+					});
+			});
+
+
+
+			//суб бутон за разпределение на играчите по отбори
+			$("body").on('click','#distributeplayersbtn',function(){
+					$.get(myHost+"WebGame/db/distributeplayers", function(resultDistributePlayers){
+						$("#main-content").html(resultDistributePlayers);
+					});
+			});
+
+
+			//суб бутон създаване на програмата
+			$("body").on('click','#createroundsbtn',function(){
+					$.get(myHost+"WebGame/db/createrounds", function(resultCreateRounds){
+						$("#main-content").html(resultCreateRounds);
+					});
+			});
+
+
+			//суб бутон старт на кръга
+			$("body").on('click','#playgamebtn',function(){
+					$.get(myHost+"WebGame/db/playgame", function(resultPlayGame){
+						$("#main-content").html(resultPlayGame);
+					});
+			});
+
+
 			//тест заявка към уеб сървиса за статистика на отделен отбор
 			// връща JSON  от обект Team
 			$("#test-btn").click(function(){
@@ -315,29 +372,30 @@ $(document).ready(function(){
 
 			function genRowSelectPlayes(obj){
 				var resultGenRow = "<div id='team-tactic-r1-d1'><select class='form-control input-sm'><option> </option>";
-				if(obj.gk){resultGenRow+="<option>"+obj.gk.name+"</option>";}
-				if(obj.df1){resultGenRow+="<option>"+obj.df1.name+"</option>";}
-				if(obj.df2){resultGenRow+="<option>"+obj.df2.name+"</option>";}
-				if(obj.df3){resultGenRow+="<option>"+obj.df3.name+"</option>";}
-				if(obj.df4){resultGenRow+="<option>"+obj.df4.name+"</option>";}
-				if(obj.df5){resultGenRow+="<option>"+obj.df5.name+"</option>";}
-				if(obj.md1){resultGenRow+="<option>"+obj.md1.name+"</option>";}
-				if(obj.md2){resultGenRow+="<option>"+obj.md2.name+"</option>";}
-				if(obj.md3){resultGenRow+="<option>"+obj.md3.name+"</option>";}
-				if(obj.md4){resultGenRow+="<option>"+obj.md4.name+"</option>";}
-				if(obj.md5){resultGenRow+="<option>"+obj.md5.name+"</option>";}
-				if(obj.fw1){resultGenRow+="<option>"+obj.fw1.name+"</option>";}
-				if(obj.fw2){resultGenRow+="<option>"+obj.fw2.name+"</option>";}
-				if(obj.fw3){resultGenRow+="<option>"+obj.fw3.name+"</option>";}
-				if(obj.fw4){resultGenRow+="<option>"+obj.fw4.name+"</option>";}
-				if(obj.fw5){resultGenRow+="<option>"+obj.fw5.name+"</option>";}
-				if(obj.r1){resultGenRow+="<option>"+obj.r1.name+"</option>";}
-				if(obj.r2){resultGenRow+="<option>"+obj.r2.name+"</option>";}
-				if(obj.r3){resultGenRow+="<option>"+obj.r3.name+"</option>";}
-				if(obj.r4){resultGenRow+="<option>"+obj.r4.name+"</option>";}
-				if(obj.r5){resultGenRow+="<option>"+obj.r5.name+"</option>";}
-				if(obj.r6){resultGenRow+="<option>"+obj.r6.name+"</option>";}
-				if(obj.r7){resultGenRow+="<option>"+obj.r7.name+"</option>";}
+				var prefpos;
+				if(obj.gk){resultGenRow+="<option>GK-"+obj.gk.name+":"+obj.gk.s1+"-"+obj.gk.s2+"-"+obj.gk.s3+"-"+obj.gk.s4+"</option>";}
+				if(obj.df1){resultGenRow+="<option>DF-"+obj.df1.name+":"+obj.df1.s1+"-"+obj.df1.s2+"-"+obj.df1.s3+"-"+obj.df1.s4+"</option>";}
+				if(obj.df2){resultGenRow+="<option>DF-"+obj.df2.name+":"+obj.df2.s1+"-"+obj.df2.s2+"-"+obj.df2.s3+"-"+obj.df2.s4+"</option>";}
+				if(obj.df3){resultGenRow+="<option>DF-"+obj.df3.name+":"+obj.df3.s1+"-"+obj.df3.s2+"-"+obj.df3.s3+"-"+obj.df3.s4+"</option>";}
+				if(obj.df4){resultGenRow+="<option>DF-"+obj.df4.name+":"+obj.df4.s1+"-"+obj.df4.s2+"-"+obj.df4.s3+"-"+obj.df4.s4+"</option>";}
+				if(obj.df5){resultGenRow+="<option>DF-"+obj.df5.name+":"+obj.df5.s1+"-"+obj.df5.s2+"-"+obj.df5.s3+"-"+obj.df5.s4+"</option>";}
+				if(obj.md1){resultGenRow+="<option>MF-"+obj.md1.name+":"+obj.md1.s1+"-"+obj.md1.s2+"-"+obj.md1.s3+"-"+obj.md1.s4+"</option>";}
+				if(obj.md2){resultGenRow+="<option>MF-"+obj.md2.name+":"+obj.md2.s1+"-"+obj.md2.s2+"-"+obj.md2.s3+"-"+obj.md2.s4+"</option>";}
+				if(obj.md3){resultGenRow+="<option>MF-"+obj.md3.name+":"+obj.md3.s1+"-"+obj.md3.s2+"-"+obj.md3.s3+"-"+obj.md3.s4+"</option>";}
+				if(obj.md4){resultGenRow+="<option>MF-"+obj.md4.name+":"+obj.md4.s1+"-"+obj.md4.s2+"-"+obj.md4.s3+"-"+obj.md4.s4+"</option>";}
+				if(obj.md5){resultGenRow+="<option>MF-"+obj.md5.name+":"+obj.md5.s1+"-"+obj.md5.s2+"-"+obj.md5.s3+"-"+obj.md5.s4+"</option>";}
+				if(obj.fw1){resultGenRow+="<option>FW-"+obj.fw1.name+":"+obj.fw1.s1+"-"+obj.fw1.s2+"-"+obj.fw1.s3+"-"+obj.fw1.s4+"</option>";}
+				if(obj.fw2){resultGenRow+="<option>FW-"+obj.fw2.name+":"+obj.fw2.s1+"-"+obj.fw2.s2+"-"+obj.fw2.s3+"-"+obj.fw2.s4+"</option>";}
+				if(obj.fw3){resultGenRow+="<option>FW-"+obj.fw3.name+":"+obj.fw3.s1+"-"+obj.fw3.s2+"-"+obj.gk.fw3+"-"+obj.fw3.s4+"</option>";}
+				if(obj.fw4){resultGenRow+="<option>FW-"+obj.fw4.name+":"+obj.fw4.s1+"-"+obj.fw4.s2+"-"+obj.fw4.s3+"-"+obj.fw4.s4+"</option>";}
+				if(obj.fw5){resultGenRow+="<option>FW-"+obj.fw5.name+":"+obj.fw5.s1+"-"+obj.fw5.s2+"-"+obj.fw5.s3+"-"+obj.fw5.s4+"</option>";}
+				if(obj.r1){resultGenRow+="<option>R-"+obj.r1.name+":"+obj.r1.s1+"-"+obj.r1.s2+"-"+obj.r1.s3+"-"+obj.r1.s4+"</option>";}
+				if(obj.r2){resultGenRow+="<option>R-"+obj.r2.name+":"+obj.r2.s1+"-"+obj.r2.s2+"-"+obj.r2.s3+"-"+obj.r2.s4+"</option>";}
+				if(obj.r3){resultGenRow+="<option>R-"+obj.r3.name+":"+obj.r3.s1+"-"+obj.r3.s2+"-"+obj.r3.s3+"-"+obj.r3.s4+"</option>";}
+				if(obj.r4){resultGenRow+="<option>R-"+obj.r4.name+":"+obj.r4.s1+"-"+obj.r4.s2+"-"+obj.r4.s3+"-"+obj.r4.s4+"</option>";}
+				if(obj.r5){resultGenRow+="<option>R-"+obj.r5.name+":"+obj.r5.s1+"-"+obj.r5.s2+"-"+obj.r5.s3+"-"+obj.r5.s4+"</option>";}
+				if(obj.r6){resultGenRow+="<option>R-"+obj.r6.name+":"+obj.r6.s1+"-"+obj.r6.s2+"-"+obj.r6.s3+"-"+obj.r6.s4+"</option>";}
+				if(obj.r7){resultGenRow+="<option>R-"+obj.r7.name+":"+obj.r7.s1+"-"+obj.r7.s2+"-"+obj.r7.s3+"-"+obj.r7.s4+"</option>";}
 				resultGenRow+="</select></div>";
 				return resultGenRow;
 }
