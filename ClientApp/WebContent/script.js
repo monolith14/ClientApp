@@ -150,7 +150,7 @@ $(document).ready(function(){
 			});
 			//бутон "Отбор" извежда таблица с играчите на отбора по позиции
 			$("#teambtn").click(function(){
-				$("#main-content").html("Текст за ?????");
+				$("#main-content").html("<ul><li>от меню 'Състав' може да видите играчите, които са в отбора, техните показатели и позиции, на които играят.</li><li>от меню 'Схема на игра' може да направите размествания на играчите, да определите на коя позиция да играят.</li></ul>");
 				var teamMenuButtons = "<button class='btn btn-info btn-xs' id='teambtntable'>Състав</button>&nbsp;<button id='teambtntactic' class='btn btn-info btn-xs'>Схема на игра</button>";
 				$("#sub-menu").html(teamMenuButtons);
 			});		
@@ -166,7 +166,7 @@ $(document).ready(function(){
 						teamTacticTable+="</div>";
 						teamTacticTable+="<div id='spacer-120px'></div>";
 						}
-						//posledniq div za vratar
+						//posledniq div za vratar   
 						teamTacticTable+="<div id='team-tactic-r'><div id='team-tactic-r1-d1'></div><div id='team-tactic-r1-d1'></div>";
 						teamTacticTable+=teamTacticTableDiv;
 						teamTacticTable+="</div>";
@@ -251,10 +251,36 @@ $(document).ready(function(){
 					$("#main-content").html(teamPlayersTable);				
 				});
 				});
-				
 			
-			
-			
+			//бутон мачове
+			$("#playedgamesbtn").click(function(){
+				$("#main-content").html("<ul><li>меню 'Моите резултати' показва резултатите на Вашият отбор.</li><li>меню 'Резултати по кръгове' показва всички резултати за определен кръг.</li></ul>");
+				var teamMenuButtons = "<button class='btn btn-info btn-xs' id='myplayedgamesbtn'>Моите резултати</button>&nbsp;<button id='allplayedgamesbtn' class='btn btn-info btn-xs'>Резултати по кръгове</button>";
+				$("#sub-menu").html(teamMenuButtons);
+			});
+			//суб бутон моите мачове
+			$("body").on('click','#myplayedgamesbtn',function(){
+					$.get(myHost+"WebGame/db/getmyresults?team="+$.cookie("team"), function(resultMyPlayedGames){
+						$("#main-content").html(resultMyPlayedGames);
+					});
+			});
+			//суб бутон всички мачове за кръг
+			$("body").on('click','#allplayedgamesbtn',function(){
+					$("#main-content").html("<div id='team-tactic'><h3>Въведете № кръг</h3></br><input style='color:black;' size='3' type='text' id='inpallplayedgames'>&nbsp;&nbsp;<button class='btn btn-info btn-xs' id='getallplayedgamesbtn'>Покажи резултатите</button></div>");
+
+			});
+
+			//суб бутон всички мачове - резултати
+			$("body").on('click','#getallplayedgamesbtn',function(){
+					$.get(myHost+"WebGame/db/getallresults?round="+$("#inpallplayedgames").val(), function(resultAllPlayedGames){
+						$("#main-content").html(resultAllPlayedGames);
+					});
+			});
+
+
+
+
+
 			//бутон "Настройки" смяна на парола
 			$("#settingsbtn").click(function(){
 				var returnSettings = '<div id="changepass-div" class="input-group input-group-sm"><div class="row"><h4 id="reg-header">Смяна на парола:</h4></div><div class="row"><input id="chpass-old" type="password" placeholder="стара парола"></div><div class="row"><input id="chpass-new1" type="password" placeholder="нова парола"></div><div class="row"><input id="chpass-new2" type="password" placeholder="повтори паролата"></div><div class="row"><button class="btn btn-info btn-sm" id="frmchpassbtn">Промяна</button></div></div>';
@@ -280,7 +306,7 @@ $(document).ready(function(){
 
 			//бутон admin
 			$("#adminbtn").click(function(){
-				$("#main-content").html("кратко разяснение на админ ббутоните");
+				$("#main-content").html("<ul><li>меню 'Генериране на играччи' генерира играчи със произволни имена и показатели, като е нужно да се въведе желания брой. Може да се генерират допълнително по всяко време.</li><li>меню 'Разпределение по отбори' се стартира еднократно в началото, като разпределя играчите по отбори на случаен принцип.</li><li>меню 'Генериране на програма' се стартира еднократно в началото на всеки шампионат и генерира мачовете между отборите</li><li>меню 'Старт на кръга' генерира резултати за текущия кръг.</li></ul>");
 				var teamMenuButtons = "<button class='btn btn-info btn-xs' id='createplayerbtn'>Генериране на играчи</button>&nbsp;<button id='distributeplayersbtn' class='btn btn-info btn-xs'>Разпределение по отбори</button>&nbsp;<button id='createroundsbtn' class='btn btn-info btn-xs'>Генериране на програма</button>&nbsp;<button id='playgamebtn' class='btn btn-info btn-xs'>Старт на кръга</button>";
 				$("#sub-menu").html(teamMenuButtons);
 			});
